@@ -56,12 +56,11 @@ function fetchAllCats(callback) {
         fetchCatsByOwner(owner, (err, catData) => {
           if (err) console.error(err)
           else {
-            // add catData to allCats array!
-            console.log(owner, "cats", catData)
+            allCats.push(...catData)
           }
           count++
-          if (count === data.length) {
-            // pass allCats sorted in alphabetical order!
+          if (count === data.length && data.length) {
+            callback(allCats.sort())
           }
         })
 
