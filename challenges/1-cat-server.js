@@ -12,14 +12,14 @@ function fetchBannerContent(callback) {
   })
 }
 
-function fetchAllOwners(callback) { 
+function fetchAllOwners(callback) {
   request('/owners', (err, arr) => {
-    const newArr = arr.map((item) => 
+    const newArr = arr.map((item) =>
       item.toLowerCase()
     )
     console.log(newArr)
     callback(null, newArr)
-})
+  })
 }
 function fetchCatsByOwner(owner, callback) {
   request(`/owners/${owner}/cats`, callback)
@@ -28,33 +28,50 @@ function fetchCatsByOwner(owner, callback) {
 function fetchCatPics(catPicsArr, callback) {
   const newArr = []
   let callCount = 0;
-  if (catPicsArr.length === 0) callback(null) 
 
-  catPicsArr.forEach((item) =>{
+  if (catPicsArr.length === 0) callback(null)
+
+  catPicsArr.forEach((item) => {
     request(`/pics/${item}`, (err, data) => {
-     
-    if (err) {
-      newArr.push("placeholder.jpg") 
-    callCount++
-    }
-  
-    else {
-      newArr.push(data)
-      callCount++;
-    } 
-    if (callCount === catPicsArr.length) {
-      console.log(newArr);
-    callback(err, newArr);
-    }  
 
+      err ? newArr.push("placeholder.jpg") : newArr.push(data)
+      callCount++
+
+      if (callCount === catPicsArr.length) {
+        callback(err, newArr);
+      }
     })
-    
   })
-  }
- 
+}
 
-function fetchAllCats() { 
-  
+function fetchAllCats(callback) {
+  const allCats = [];
+  let count = 0;
+
+  fetchAllOwners((err, data) => {
+    if (err) console.error(err)
+    else {
+      // data  [ 'pavlov', 'schrodinger', 'foucault', 'vel', 'calvin' ]
+      data.forEach(owner => {
+        fetchCatsByOwner(owner, (err, catData) => {
+          if (err) console.error(err)
+          else {
+            // add catData to allCats array!
+            console.log(owner, "cats", catData)
+          }
+          count++
+          if (count === data.length) {
+            // pass allCats sorted in alphabetical order!
+          }
+        })
+
+      })
+    }
+
+  })
+
+
+
 }
 
 function fetchOwnersWithCats() { }
