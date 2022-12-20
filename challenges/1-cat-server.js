@@ -7,7 +7,8 @@ function checkServerStatus(callback) {
 function fetchBannerContent(callback) {
   request('/banner', (err, obj) => {
     obj.copyrightYear = 2022
-    callback(err, obj)
+
+    callback(null, { ...obj })
   })
 }
 
