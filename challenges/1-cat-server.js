@@ -1,22 +1,29 @@
 const request = require('../utils/server');
 
-function checkServerStatus() {}
+function checkServerStatus(callback) {
+  request('/status', callback)
+}
 
-function fetchBannerContent() {}
+function fetchBannerContent(callback) {
+  request('/banner', (err, obj) => {
+    obj.copyrightYear = 2022
+    callback(err, obj)
+  })
+}
 
-function fetchAllOwners() {}
+function fetchAllOwners() { }
 
-function fetchCatsByOwner() {}
+function fetchCatsByOwner() { }
 
-function fetchCatPics() {}
+function fetchCatPics() { }
 
-function fetchAllCats() {}
+function fetchAllCats() { }
 
-function fetchOwnersWithCats() {}
+function fetchOwnersWithCats() { }
 
-function kickLegacyServerUntilItWorks() {}
+function kickLegacyServerUntilItWorks() { }
 
-function buySingleOutfit() {}
+function buySingleOutfit() { }
 
 module.exports = {
   buySingleOutfit,
