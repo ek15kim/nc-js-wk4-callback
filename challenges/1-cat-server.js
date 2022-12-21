@@ -34,7 +34,8 @@ function fetchCatPics(catPicsArr, callback) {
   catPicsArr.forEach((item) => {
     request(`/pics/${item}`, (err, data) => {
 
-      err ? newArr.push("placeholder.jpg") : newArr.push(data)
+      if (err) newArr.push("placeholder.jpg")
+      else newArr.push(data)
       callCount++
 
       if (callCount === catPicsArr.length) {
@@ -49,31 +50,44 @@ function fetchAllCats(callback) {
   let count = 0;
 
   fetchAllOwners((err, data) => {
-    if (err) console.error(err)
+    if (err) callback(err)
     else {
-      // data  [ 'pavlov', 'schrodinger', 'foucault', 'vel', 'calvin' ]
-      data.forEach(owner => {
+      data.forEach((owner, index) => {
         fetchCatsByOwner(owner, (err, catData) => {
-          if (err) console.error(err)
+          if (err) callback(err)
           else {
             allCats.push(...catData)
           }
           count++
           if (count === data.length && data.length) {
-            callback(allCats.sort())
+            callback(null, allCats.sort())
           }
         })
-
       })
     }
-
   })
-
-
-
 }
 
-function fetchOwnersWithCats() { }
+function fetchOwnersWithCats(callback) {
+  const ownersWithCats = [];
+  let count = 0;
+
+  fetchAllOwners((err, owners) => {
+    if (err) callback(err)
+
+    owners.forEach((owner, index) => {
+      fetchCatsByOwner(owner, (err, ownersCats) => {
+        if (err) callback(err)
+        ownersWithCats[index] = ({ owner: owner, cats: ownersCats })
+        count++
+        if (count === owners.length) {
+          callback(null, ownersWithCats)
+        }
+      })
+    })
+
+  })
+}
 
 function kickLegacyServerUntilItWorks() { }
 
