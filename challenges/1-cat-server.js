@@ -89,9 +89,31 @@ function fetchOwnersWithCats(callback) {
   })
 }
 
-function kickLegacyServerUntilItWorks() { }
+function kickLegacyServerUntilItWorks(callback) {
+  request('/legacy-status', (err, data) => {
+    if (err) kickLegacyServerUntilItWorks(callback)
+    else callback(null, data)
+  })
+}
 
-function buySingleOutfit() { }
+// - to take an outfit and a callback function as its arguments
+// - need to make a request to the `/outfits/:outfit` end-point in order to purchase a particular outfit -
+//   however, there is a big problem. The person who has designed the server for this end-point has accidentally
+//   triggered the purchase of the item multiple times - ouch, thats going to cost a lot.
+// - you need to use additional logic to prevent your final callback function from being invoked multiple times
+
+function buySingleOutfit(outfit, callback) {
+  let count = 0;
+  request(`/outfits/${outfit}`, (err, data) => {
+    if (err) {
+      callback(err)
+    }
+    else if (count < 1) {
+      callback(null, data)
+    }
+    count++;
+  })
+}
 
 module.exports = {
   buySingleOutfit,
