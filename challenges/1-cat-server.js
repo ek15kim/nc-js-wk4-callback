@@ -4,45 +4,24 @@ const request = require('../utils/server');
 const checkServerStatus = (callback) => request('/status', callback)
 
 const fetchBannerContent = (callback) => request('/banner', (err, response) => {
-  callback(null, { ...response, copyrightYear: 2023 })
-
+  err ?
+    callback(err) :
+    callback(null, { ...response, copyrightYear: 2023 })
 })
 
 const fetchAllOwners = (callback) => {
-  request('/owners', (err, arr) => {
-    err ? callback(err) : callback(null, arr.map((item) => item.toLowerCase()
-    ))
+  request('/owners', (err, data) => {
+    err ?
+      callback(err) :
+      callback(null, data.map((item) => item.toLowerCase()
+      ))
   })
 }
 
-
-// function checkServerStatus(callback) {
-//   request('/status', callback)
-// }
-
-// function fetchBannerContent(callback) {
-//   request('/banner', (err, obj) => {
-//     obj.copyrightYear = 2022
-
-//     callback(null, { ...obj })
-//   })
-// }
-
-// function fetchAllOwners(callback) {
-//   request('/owners', (err, arr) => {
-//     // error first
-//     if (err) callback(err)
-//     // const newArr = arr.map((item) =>
-//     //   item.toLowerCase()
-//     // )
-//     callback(null, arr.map((item) =>
-//       item.toLowerCase()
-//     ))
-//   })
-// }
-function fetchCatsByOwner(owner, callback) {
+const fetchCatsByOwner = (owner, callback) => {
   request(`/owners/${owner}/cats`, callback)
 }
+
 
 function fetchCatPics(catPicsArr, callback) {
   const newArr = []
@@ -108,14 +87,11 @@ function fetchOwnersWithCats(callback) {
   })
 }
 
-function kickLegacyServerUntilItWorks(callback) {
-  request('/legacy-status', (err, data) => {
-    if (err) kickLegacyServerUntilItWorks(callback)
-    else callback(null, data)
-  })
-}
+const kickLegacyServerUntilItWorks = (callback) => request('/legacy-status',
+  (err, data) => err ? kickLegacyServerUntilItWorks(callback) : callback(null, data)
+)
 
-function buySingleOutfit(outfit, callback) {
+const buySingleOutfit = (outfit, callback) => {
   let count = 0;
   request(`/outfits/${outfit}`, (err, data) => {
     if (err) {
@@ -128,6 +104,7 @@ function buySingleOutfit(outfit, callback) {
   })
 }
 
+
 module.exports = {
   buySingleOutfit,
   checkServerStatus,
@@ -139,3 +116,54 @@ module.exports = {
   fetchOwnersWithCats,
   fetchCatsByOwner
 };
+
+
+
+// function checkServerStatus(callback) {
+//   request('/status', callback)
+// }
+
+// function fetchBannerContent(callback) {
+//   request('/banner', (err, obj) => {
+//     obj.copyrightYear = 2022
+
+//     callback(null, { ...obj })
+//   })
+// }
+
+// function fetchAllOwners(callback) {
+//   request('/owners', (err, arr) => {
+//     // error first
+//     if (err) callback(err)
+//     // const newArr = arr.map((item) =>
+//     //   item.toLowerCase()
+//     // )
+//     callback(null, arr.map((item) =>
+//       item.toLowerCase()
+//     ))
+//   })
+// }
+
+// function fetchCatsByOwner(owner, callback) {
+//   request(`/owners/${owner}/cats`, callback)
+// }
+
+// function kickLegacyServerUntilItWorks(callback) {
+//   request('/legacy-status', (err, data) => {
+//     if (err) kickLegacyServerUntilItWorks(callback)
+//     else callback(null, data)
+//   })
+// }
+
+// function buySingleOutfit(outfit, callback) {
+//   let count = 0;
+//   request(`/outfits/${outfit}`, (err, data) => {
+//     if (err) {
+//       callback(err)
+//     }
+//     else if (count < 1) {
+//       callback(null, data)
+//     }
+//     count++;
+//   })
+// }
