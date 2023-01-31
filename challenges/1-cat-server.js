@@ -1,26 +1,45 @@
 const request = require('../utils/server');
 
-function checkServerStatus(callback) {
-  request('/status', callback)
-}
 
-function fetchBannerContent(callback) {
-  request('/banner', (err, obj) => {
-    obj.copyrightYear = 2022
+const checkServerStatus = (callback) => request('/status', callback)
 
-    callback(null, { ...obj })
-  })
-}
+const fetchBannerContent = (callback) => request('/banner', (err, response) => {
+  callback(null, { ...response, copyrightYear: 2023 })
 
-function fetchAllOwners(callback) {
+})
+
+const fetchAllOwners = (callback) => {
   request('/owners', (err, arr) => {
-    const newArr = arr.map((item) =>
-      item.toLowerCase()
-    )
-    console.log(newArr)
-    callback(null, newArr)
+    err ? callback(err) : callback(null, arr.map((item) => item.toLowerCase()
+    ))
   })
 }
+
+
+// function checkServerStatus(callback) {
+//   request('/status', callback)
+// }
+
+// function fetchBannerContent(callback) {
+//   request('/banner', (err, obj) => {
+//     obj.copyrightYear = 2022
+
+//     callback(null, { ...obj })
+//   })
+// }
+
+// function fetchAllOwners(callback) {
+//   request('/owners', (err, arr) => {
+//     // error first
+//     if (err) callback(err)
+//     // const newArr = arr.map((item) =>
+//     //   item.toLowerCase()
+//     // )
+//     callback(null, arr.map((item) =>
+//       item.toLowerCase()
+//     ))
+//   })
+// }
 function fetchCatsByOwner(owner, callback) {
   request(`/owners/${owner}/cats`, callback)
 }
@@ -95,12 +114,6 @@ function kickLegacyServerUntilItWorks(callback) {
     else callback(null, data)
   })
 }
-
-// - to take an outfit and a callback function as its arguments
-// - need to make a request to the `/outfits/:outfit` end-point in order to purchase a particular outfit -
-//   however, there is a big problem. The person who has designed the server for this end-point has accidentally
-//   triggered the purchase of the item multiple times - ouch, thats going to cost a lot.
-// - you need to use additional logic to prevent your final callback function from being invoked multiple times
 
 function buySingleOutfit(outfit, callback) {
   let count = 0;
